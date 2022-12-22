@@ -1,13 +1,25 @@
 import {View, Text, Button, TouchableOpacity, Image} from 'react-native';
 import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import MapView, {Polygon} from 'react-native-maps';
+import MapView, {Polygon, Polyline} from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {decode} from '@googlemaps/polyline-codec';
 
 const Detail = ({route}) => {
   const {goBack} = useNavigation();
 
-  const polygon = route.params.region.polygon?.coordinates[0]?.map(c => ({
+  const filterRoute = route?.params?.routes.filter(
+    r => r.regionId === route?.params?.region._id,
+  );
+
+  const decodedRoute = decode(filterRoute[0].encodedPolyline);
+
+  const polylineCoords = decodedRoute?.map(c => ({
+    latitude: c[0],
+    longitude: c[1],
+  }));
+
+  const polygon = route.params.region.polygon.coordinates[0]?.map(c => ({
     latitude: c[1],
     longitude: c[0],
   }));
@@ -32,6 +44,11 @@ const Detail = ({route}) => {
           coordinates={polygon}
           fillColor="rgba(96,96,96,0.5)"
           strokeColor="#696969"
+          strokeWidth={2}
+        />
+        <Polyline
+          coordinates={polylineCoords}
+          strokeColor="#1E90FF"
           strokeWidth={2}
         />
       </MapView>
