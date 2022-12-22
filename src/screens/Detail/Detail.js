@@ -7,9 +7,12 @@ import {decode} from '@googlemaps/polyline-codec';
 
 const Detail = ({route}) => {
   const {goBack} = useNavigation();
+  const [selectedRegion, setSelectedRegion] = useState(route?.params?.region);
+
+  const regions = route?.params?.regions;
 
   const filterRoute = route?.params?.routes.filter(
-    r => r.regionId === route?.params?.region._id,
+    r => r.regionId === selectedRegion._id,
   );
 
   const decodedRoute = decode(filterRoute[0].encodedPolyline);
@@ -19,19 +22,39 @@ const Detail = ({route}) => {
     longitude: c[1],
   }));
 
-  const polygonCoords = route.params.region.polygon.coordinates[0]?.map(c => ({
+  const polygonCoords = selectedRegion.polygon.coordinates[0]?.map(c => ({
     latitude: c[1],
     longitude: c[0],
   }));
 
-  const centerLatitude = route.params.region.center.coordinates[1];
-  const centerLongitude = route.params.region.center.coordinates[0];
+  const centerLatitude = selectedRegion.center.coordinates[1];
+  const centerLongitude = selectedRegion.center.coordinates[0];
 
   const startLatitude = polylineCoords[0].latitude;
   const startLongitude = polylineCoords[0].longitude;
 
   const finishLatitude = polylineCoords[polylineCoords.length - 1].latitude;
   const finishLongitude = polylineCoords[polylineCoords.length - 1].longitude;
+
+  const leftArrowPress = id => {
+    if (id === 'region1') {
+      setSelectedRegion(regions[2]);
+    } else if (id === 'region2') {
+      setSelectedRegion(regions[0]);
+    } else if (id === 'region3') {
+      setSelectedRegion(regions[1]);
+    }
+  };
+
+  const rightArrowPress = id => {
+    if (id === 'region1') {
+      setSelectedRegion(regions[1]);
+    } else if (id === 'region2') {
+      setSelectedRegion(regions[2]);
+    } else if (id === 'region3') {
+      setSelectedRegion(regions[0]);
+    }
+  };
 
   return (
     <View
@@ -105,7 +128,12 @@ const Detail = ({route}) => {
             alignItems: 'center',
             marginBottom: '2%',
           }}>
-          {/* <Ionicons name="arrow-back" size={32} color={'black'} /> */}
+          <Ionicons
+            onPress={() => leftArrowPress(selectedRegion._id)}
+            name="arrow-back"
+            size={32}
+            color={'black'}
+          />
 
           <Text
             style={{
@@ -113,9 +141,14 @@ const Detail = ({route}) => {
               fontSize: 20,
               fontFamily: 'Poppins-SemiBold',
             }}>
-            {'detail'}
+            {selectedRegion.name}
           </Text>
-          {/* <Ionicons name="arrow-forward" size={32} color={'black'} /> */}
+          <Ionicons
+            onPress={() => rightArrowPress(selectedRegion._id)}
+            name="arrow-forward"
+            size={32}
+            color={'black'}
+          />
         </View>
       </View>
     </View>
