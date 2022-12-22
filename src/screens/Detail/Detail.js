@@ -1,8 +1,11 @@
-import {View, Text, Button, TouchableOpacity, Image} from 'react-native';
+import {View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
+import styles from './Detail.styles';
+
 import {useNavigation} from '@react-navigation/native';
-import MapView, {Marker, Polygon, Polyline} from 'react-native-maps';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import CloseButton from '../../components/CloseButton/CloseButton';
+import BottomBar from '../../components/BottomBar';
+import Map from '../../components/Map';
 import {decode} from '@googlemaps/polyline-codec';
 
 const Detail = ({route}) => {
@@ -17,7 +20,6 @@ const Detail = ({route}) => {
   );
 
   const decodedRoute = decode(filterRoute[0].encodedPolyline);
-
   const polylineCoords = decodedRoute?.map(c => ({
     latitude: c[0],
     longitude: c[1],
@@ -64,101 +66,24 @@ const Detail = ({route}) => {
   }, [polylineCoords]);
 
   return (
-    <View
-      style={{
-        flex: 1,
-      }}>
-      <MapView
-        ref={mapRef}
-        provider="google"
-        style={{flex: 1}}
-        initialRegion={{
-          latitude: centerLatitude,
-          longitude: centerLongitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}>
-        <Marker
-          coordinate={{
-            latitude: finishLatitude,
-            longitude: finishLongitude,
-          }}>
-          <Image
-            style={{width: 36, height: 40, resizeMode: 'contain'}}
-            source={require('../../assets/images/home-marker.png')}
-          />
-        </Marker>
-        <Marker
-          coordinate={{
-            latitude: startLatitude,
-            longitude: startLongitude,
-          }}>
-          <Image
-            style={{width: 36, height: 40, resizeMode: 'contain'}}
-            source={require('../../assets/images/courier-marker.png')}
-          />
-        </Marker>
-        <Polygon
-          coordinates={polygonCoords}
-          fillColor="rgba(96,96,96,0.5)"
-          strokeColor="#696969"
-          strokeWidth={2}
-        />
-        <Polyline
-          coordinates={polylineCoords}
-          strokeColor="#1E90FF"
-          strokeWidth={2}
-        />
-      </MapView>
-      <View style={{position: 'absolute', top: '8%', right: '8%'}}>
-        <TouchableOpacity onPress={() => goBack()}>
-          <Image
-            style={{width: 40, height: 40, resizeMode: 'contain'}}
-            source={require('../../assets/images/close-icon.png')}
-          />
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          position: 'absolute',
-          backgroundColor: 'white',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: '8%',
-        }}>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginHorizontal: 40,
-            alignItems: 'center',
-            marginBottom: '2%',
-          }}>
-          <Ionicons
-            onPress={() => leftArrowPress(selectedRegion._id)}
-            name="arrow-back"
-            size={32}
-            color={'black'}
-          />
-
-          <Text
-            style={{
-              color: 'black',
-              fontSize: 20,
-              fontFamily: 'Poppins-SemiBold',
-            }}>
-            {selectedRegion.name}
-          </Text>
-          <Ionicons
-            onPress={() => rightArrowPress(selectedRegion._id)}
-            name="arrow-forward"
-            size={32}
-            color={'black'}
-          />
-        </View>
-      </View>
+    <View style={styles.container}>
+      <Map
+        mapRef={mapRef}
+        centerLatitude={centerLatitude}
+        centerLongitude={centerLongitude}
+        finishLatitude={finishLatitude}
+        finishLongitude={finishLongitude}
+        polygonCoords={polygonCoords}
+        polylineCoords={polylineCoords}
+        startLatitude={startLatitude}
+        startLongitude={startLongitude}
+      />
+      <CloseButton goBack={goBack} />
+      <BottomBar
+        selectedRegionName={selectedRegion.name}
+        leftArrowPress={() => leftArrowPress(selectedRegion._id)}
+        rightArrowPress={() => rightArrowPress(selectedRegion._id)}
+      />
     </View>
   );
 };
