@@ -1,11 +1,14 @@
 import {View, Text, Button, TouchableOpacity, Image} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import MapView from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const Detail = () => {
+const Detail = ({route}) => {
   const {goBack} = useNavigation();
+
+  const centerLatitude = route.params.region.center.coordinates[1];
+  const centerLongitude = route.params.region.center.coordinates[0];
 
   return (
     <View
@@ -15,8 +18,8 @@ const Detail = () => {
       <MapView
         style={{flex: 1}}
         initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
+          latitude: centerLatitude,
+          longitude: centerLongitude,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
@@ -47,7 +50,7 @@ const Detail = () => {
             alignItems: 'center',
             marginBottom: '2%',
           }}>
-          <Ionicons name="arrow-back" size={32} color={'black'} />
+          {/* <Ionicons name="arrow-back" size={32} color={'black'} /> */}
 
           <Text
             style={{
@@ -57,7 +60,7 @@ const Detail = () => {
             }}>
             {'detail'}
           </Text>
-          <Ionicons name="arrow-forward" size={32} color={'black'} />
+          {/* <Ionicons name="arrow-forward" size={32} color={'black'} /> */}
         </View>
       </View>
     </View>
