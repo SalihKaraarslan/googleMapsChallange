@@ -1,7 +1,7 @@
 import {View, Text, Button, TouchableOpacity, Image} from 'react-native';
 import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import MapView, {Polygon, Polyline} from 'react-native-maps';
+import MapView, {Marker, Polygon, Polyline} from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {decode} from '@googlemaps/polyline-codec';
 
@@ -19,13 +19,19 @@ const Detail = ({route}) => {
     longitude: c[1],
   }));
 
-  const polygon = route.params.region.polygon.coordinates[0]?.map(c => ({
+  const polygonCoords = route.params.region.polygon.coordinates[0]?.map(c => ({
     latitude: c[1],
     longitude: c[0],
   }));
 
   const centerLatitude = route.params.region.center.coordinates[1];
   const centerLongitude = route.params.region.center.coordinates[0];
+
+  const startLatitude = polylineCoords[0].latitude;
+  const startLongitude = polylineCoords[0].longitude;
+
+  const finishLatitude = polylineCoords[polylineCoords.length - 1].latitude;
+  const finishLongitude = polylineCoords[polylineCoords.length - 1].longitude;
 
   return (
     <View
@@ -40,8 +46,28 @@ const Detail = ({route}) => {
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}>
+        <Marker
+          coordinate={{
+            latitude: finishLatitude,
+            longitude: finishLongitude,
+          }}>
+          <Image
+            style={{width: 36, height: 40, resizeMode: 'contain'}}
+            source={require('../../assets/images/home-marker.png')}
+          />
+        </Marker>
+        <Marker
+          coordinate={{
+            latitude: startLatitude,
+            longitude: startLongitude,
+          }}>
+          <Image
+            style={{width: 36, height: 40, resizeMode: 'contain'}}
+            source={require('../../assets/images/courier-marker.png')}
+          />
+        </Marker>
         <Polygon
-          coordinates={polygon}
+          coordinates={polygonCoords}
           fillColor="rgba(96,96,96,0.5)"
           strokeColor="#696969"
           strokeWidth={2}
