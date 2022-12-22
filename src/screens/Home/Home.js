@@ -1,9 +1,9 @@
 import React from 'react';
-import {View, FlatList, Text, TouchableOpacity} from 'react-native';
+import {View, FlatList} from 'react-native';
 import styles from './Home.styles';
 
 import {useNavigation} from '@react-navigation/native';
-
+import RenderRegion from '../../components/RenderRegion';
 import Data from '../../mobileCaseData.json';
 
 const Home = () => {
@@ -12,44 +12,18 @@ const Home = () => {
   const {regions, routes} = Data;
 
   const renderItem = ({item}) => (
-    <TouchableOpacity
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        backgroundColor: 'white',
-        marginVertical: 10,
-        height: 80,
-        paddingLeft: 30,
-        borderRadius: 10,
-        shadowColor: 'black',
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.15,
-        shadowRadius: 3,
-      }}
-      onPress={() => navigate('Detail', {region: item})}>
-      <Text
-        style={{
-          color: 'black',
-          fontSize: 20,
-          fontFamily: 'Poppins-SemiBold',
-        }}>
-        {item.name}
-      </Text>
-    </TouchableOpacity>
+    <RenderRegion
+      name={item.name}
+      onPress={() =>
+        navigate('Detail', {region: item, regions: regions, routes: routes})
+      }
+    />
   );
 
   return (
-    <View style={{flex: 1, backgroundColor: '#edf3fb'}}>
+    <View style={styles.container}>
       <FlatList
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: 'center',
-          marginHorizontal: 20,
-          marginBottom: 200,
-        }}
+        contentContainerStyle={styles.flatlistContentStyle}
         scrollEnabled={false}
         data={regions}
         renderItem={renderItem}
