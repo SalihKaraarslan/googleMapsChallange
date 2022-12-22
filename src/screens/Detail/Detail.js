@@ -1,11 +1,12 @@
 import {View, Text, Button, TouchableOpacity, Image} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import MapView, {Marker, Polygon, Polyline} from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {decode} from '@googlemaps/polyline-codec';
 
 const Detail = ({route}) => {
+  const mapRef = useRef(null);
   const {goBack} = useNavigation();
   const [selectedRegion, setSelectedRegion] = useState(route?.params?.region);
 
@@ -56,12 +57,19 @@ const Detail = ({route}) => {
     }
   };
 
+  useEffect(() => {
+    mapRef.current.fitToCoordinates(polylineCoords, {
+      edgePadding: {top: 50, right: 100, bottom: 50, left: 100},
+    });
+  }, [polylineCoords]);
+
   return (
     <View
       style={{
         flex: 1,
       }}>
       <MapView
+        ref={mapRef}
         provider="google"
         style={{flex: 1}}
         initialRegion={{
